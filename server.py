@@ -7,7 +7,7 @@ from threading import Thread
 def accepting():
     while True:
         client_socket, address = server.accept()
-        Thread(target=handle_client, args=(client_socket)).start()
+        Thread(target=handle_client, args=(client_socket,)).start()
 
 def handle_client(client_socket):
     received = client_socket.recv(BUFFER_SIZE).decode()
