@@ -10,7 +10,7 @@ BUFFER_SIZE = 4096
 SEPARATOR = "<SEPARATOR>"
 
 server = socket.socket()
-server.bind(SERVER_HOST, SERVER_PORT)
+server.bind((SERVER_HOST, SERVER_PORT))
 server.listen(10)
 
 client_socket, address = server.accept()
