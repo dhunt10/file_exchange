@@ -5,10 +5,10 @@ import tqdm
 #from decrypt import decrypt
 
 client = socket(AF_INET, SOCK_STREAM)
-client.connect('10.0.0.26', 8080)
+client.connect(('10.0.0.26', 8080))
 
-with open("~/Programs/encryption/files/key.key") as f:
-    key = f.readline()
+#with open("~/Programs/encryption/files/key.key") as f:
+#    key = f.readline()
 
 SEPARATOR = "<SEPARATOR>"
 BUFFER_SIZE = 4096
@@ -16,7 +16,7 @@ BUFFER_SIZE = 4096
 filename = input("Path to file: ")
 #encrypt(filename, key)
 file_size = os.path.getsize(filename)
-client.recv(2048).decode("utf8")
+#client.recv(2048).decode("utf8")
 client.send(f"{filename}{SEPARATOR}{file_size}".encode())
 
 progress = tqdm.tqdm(range(file_size), f"Sending {filename}", unit="B", unit_scale=True, unit_divisor=1024)
