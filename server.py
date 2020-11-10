@@ -12,30 +12,36 @@ def accepting():
         #Thread(target=handle_client, args=(client_socket,)).start()
 
 def login(client_socket):
-    client_socket.send(bytes("Login\n Do you have an account (Y/N)?: "))
-    answer = client_socket.recv(BUFFER_SIZE)
+    users = get_users()
+    client_socket.send(bytes("Login\n Do you have an account (Y/N)?: ", "utf8"))
+    print('uhhhh')
+    answer = client_socket.recv(BUFFER_SIZE).decode("utf8")
     if answer == 'Y' or 'y':
-        client_socket.send(bytes("Username: "))
-        username = client_socket.recv(BUFFER_SIZE)
-        client_socket.send(bytes("Password: "))
-        password = client_socket.recv(BUFFER_SIZE)
+        client_socket.send(bytes("Username: ", "utf8"))
+        username = client_socket.recv(BUFFER_SIZE).decode("utf8")
+        client_socket.send(bytes("Password: ", "utf8"))
+        password = client_socket.recv(BUFFER_SIZE).decode("utf8")
         if users['users'][username] == password:
             os.system('cd {}'.format(os.path.join(username)))
+            client_socket.send(bytes('0', "utf8"))
             Thread(target=handle_client, args=(client_socket,)).start()
     if answer == 'N' or 'n':
         make_account(client_socket)
 
 def make_account(client_socket):
-    client_socket.send(bytes("Enter a username: "))
-    username = client_socket.recv(BUFFER_SIZE)
-    client_socket.send(bytes("Enter a password: "))
-    password = client_socket.recv(BUFFER_SIZE)
+    client_socket.send(bytes("Enter a username: ", "utf8"))
+    username = client_socket.recv(BUFFER_SIZE).decode("utf8")
+    client_socket.send(bytes("Enter a password: ", "utf8"))
+    password = client_socket.recv(BUFFER_SIZE).decode("utf8")
 
     user = {username : password}
     users['users'].update(user)
-    f = open('users.txt', 'w')
+    os.system('mkdir {}'.format(username))
+    f = open('resources/users.txt', 'w')
     f.write(str(users))
     f.close()
+    print("debug point")
+    login()
 
 def handle_client(client_socket):
     received = client_socket.recv(BUFFER_SIZE).decode()
@@ -55,15 +61,15 @@ def handle_client(client_socket):
     client_socket.close()
 
 def get_users():
+    print("i am here")
     try:
-        users = eval(open(path, 'r').read())
+        users = eval(open('resources/users.txt', 'r').read())
     except SyntaxError:
         users = ''
     return users
 
-path = os.path.basename('users.txt')
 SERVER_HOST = '0.0.0.0'
-SERVER_PORT = 8080
+SERVER_PORT = 12500
 BUFFER_SIZE = 4096
 SEPARATOR = "<SEPARATOR>"
 
