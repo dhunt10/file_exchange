@@ -5,7 +5,14 @@ import tqdm
 #from decrypt import decrypt
 
 client = socket(AF_INET, SOCK_STREAM)
-client.connect(('10.0.0.26', 8080))
+client.connect(('10.0.0.26', 12500))
+
+data = ''
+while data != '0':
+    data = client.recv(4096).decode("utf8")
+    print(data)
+    in_word = input(':')
+    client.send(bytes(in_word, "utf8"))
 
 #with open("~/Programs/encryption/files/key.key") as f:
 #    key = f.readline()

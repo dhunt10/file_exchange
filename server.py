@@ -13,10 +13,7 @@ def accepting():
 
 def login(client_socket):
     users = get_users()
-    client_socket.send(bytes("Login\n Do you have an account (Y/N)?: ", "utf8"))
-    print('uhhhh')
-    answer = client_socket.recv(BUFFER_SIZE).decode("utf8")
-    if answer == 'Y' or 'y':
+    try:
         client_socket.send(bytes("Username: ", "utf8"))
         username = client_socket.recv(BUFFER_SIZE).decode("utf8")
         client_socket.send(bytes("Password: ", "utf8"))
@@ -25,7 +22,7 @@ def login(client_socket):
             os.system('cd {}'.format(os.path.join(username)))
             client_socket.send(bytes('0', "utf8"))
             Thread(target=handle_client, args=(client_socket,)).start()
-    if answer == 'N' or 'n':
+    except KeyError:
         make_account(client_socket)
 
 def make_account(client_socket):
