@@ -22,7 +22,10 @@ BUFFER_SIZE = 4096
 #while True:
 filename = input("Path to file: ")
 #encrypt(filename, key)
-file_size = os.path.getsize(filename)
+try:
+    file_size = os.path.getsize(filename)
+except FileNotFoundError:
+    pass    
 #client.recv(2048).decode("utf8")
 client.send(f"{filename}{SEPARATOR}{file_size}".encode())
 
