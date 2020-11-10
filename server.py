@@ -7,7 +7,35 @@ from threading import Thread
 def accepting():
     while True:
         client_socket, address = server.accept()
-        Thread(target=handle_client, args=(client_socket,)).start()
+        login(client_socket)
+        #Thread(target=login, args=(client_socket,))
+        #Thread(target=handle_client, args=(client_socket,)).start()
+
+def login(client_socket):
+    client_socket.send(bytes("Login\n Do you have an account (Y/N)?: "))
+    answer = client_socket.recv(BUFFER_SIZE)
+    if answer == 'Y' or 'y':
+        client_socket.send(bytes("Username: "))
+        username = client_socket.recv(BUFFER_SIZE)
+        client_socket.send(bytes("Password: "))
+        password = client_socket.recv(BUFFER_SIZE)
+        if users['users'][username] == password:
+            os.system('cd {}'.format(os.path.join(username)))
+            Thread(target=handle_client, args=(client_socket,)).start()
+    if answer == 'N' or 'n':
+        make_account(client_socket)
+
+def make_account(client_socket):
+    client_socket.send(bytes("Enter a username: "))
+    username = client_socket.recv(BUFFER_SIZE)
+    client_socket.send(bytes("Enter a password: "))
+    password = client_socket.recv(BUFFER_SIZE)
+
+    user = {username : password}
+    users['users'].update(user)
+    f = open('users.txt', 'w')
+    f.write(str(users))
+    f.close()
 
 def handle_client(client_socket):
     received = client_socket.recv(BUFFER_SIZE).decode()
@@ -26,13 +54,21 @@ def handle_client(client_socket):
             progress.update(len(bytes_read))
     client_socket.close()
 
+def get_users():
+    try:
+        users = eval(open(path, 'r').read())
+    except SyntaxError:
+        users = ''
+    return users
 
+path = os.path.basename('users.txt')
 SERVER_HOST = '0.0.0.0'
 SERVER_PORT = 8080
 BUFFER_SIZE = 4096
 SEPARATOR = "<SEPARATOR>"
 
-addresses = {}
+users = get_users()
+
 server = socket.socket()
 server.bind((SERVER_HOST, SERVER_PORT))
 
