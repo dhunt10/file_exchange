@@ -5,7 +5,14 @@ import tqdm
 #from decrypt import decrypt
 
 client = socket(AF_INET, SOCK_STREAM)
-client.connect(('10.0.0.26', 8080))
+client.connect(('10.0.0.26', 12500))
+
+data = ''
+while data != '0':
+    data = client.recv(4096).decode("utf8")
+    print(data)
+    in_word = input(':')
+    client.send(bytes(in_word, "utf8"))
 
 #with open("~/Programs/encryption/files/key.key") as f:
 #    key = f.readline()
@@ -15,7 +22,10 @@ BUFFER_SIZE = 4096
 #while True:
 filename = input("Path to file: ")
 #encrypt(filename, key)
-file_size = os.path.getsize(filename)
+try:
+    file_size = os.path.getsize(filename)
+except FileNotFoundError:
+    pass    
 #client.recv(2048).decode("utf8")
 client.send(f"{filename}{SEPARATOR}{file_size}".encode())
 
